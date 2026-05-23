@@ -1,19 +1,64 @@
-zebra=yes
-bgpd=yes
-ospfd=no
-ospf6d=no
-ripd=no
-ripngd=no
-isisd=no
-pimd=no
-pim6d=no
-ldpd=no
-nhrpd=no
-eigrpd=no
-babeld=no
-sharpd=no
-pbrd=no
-bfdd=no
-fabricd=no
-vrrpd=no
-pathd=no
+name: clos-lab
+
+topology:
+  nodes:
+    spine1:
+      kind: linux
+      image: frrouting/frr:latest
+      binds:
+        - configs/spine1/frr.conf:/etc/frr/frr.conf
+        - configs/spine1/daemons:/etc/frr/daemons
+
+    spine2:
+      kind: linux
+      image: frrouting/frr:latest
+      binds:
+        - configs/spine2/frr.conf:/etc/frr/frr.conf
+        - configs/spine2/daemons:/etc/frr/daemons
+
+    leaf1:
+      kind: linux
+      image: frrouting/frr:latest
+      binds:
+        - configs/leaf1/frr.conf:/etc/frr/frr.conf
+        - configs/leaf1/daemons:/etc/frr/daemons
+
+    leaf2:
+      kind: linux
+      image: frrouting/frr:latest
+      binds:
+        - configs/leaf2/frr.conf:/etc/frr/frr.conf
+        - configs/leaf2/daemons:/etc/frr/daemons
+
+    leaf3:
+      kind: linux
+      image: frrouting/frr:latest
+      binds:
+        - configs/leaf3/frr.conf:/etc/frr/frr.conf
+        - configs/leaf3/daemons:/etc/frr/daemons
+
+    host1:
+      kind: linux
+      image: alpine:latest
+
+    host2:
+      kind: linux
+      image: alpine:latest
+
+    host3:
+      kind: linux
+      image: alpine:latest
+
+  links:
+    - endpoints: ["leaf1:eth1", "spine1:eth1"]
+    - endpoints: ["leaf1:eth2", "spine2:eth1"]
+
+    - endpoints: ["leaf2:eth1", "spine1:eth2"]
+    - endpoints: ["leaf2:eth2", "spine2:eth2"]
+
+    - endpoints: ["leaf3:eth1", "spine1:eth3"]
+    - endpoints: ["leaf3:eth2", "spine2:eth3"]
+
+    - endpoints: ["leaf1:eth3", "host1:eth1"]
+    - endpoints: ["leaf2:eth3", "host2:eth1"]
+    - endpoints: ["leaf3:eth3", "host3:eth1"]
